@@ -5,6 +5,10 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { TransactionsModule } from './transactions/transactions.module';
+import { LoansModule } from './loans/loans.module';
+import { SavingsModule } from './savings/savings.module';
 
 @Module({
   imports: [
@@ -27,6 +31,10 @@ import { UserModule } from './user/user.module';
       inject: [ConfigService],
     }),
     UserModule,
+    AuthModule,
+    TransactionsModule,
+    LoansModule,
+    SavingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
