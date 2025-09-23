@@ -12,23 +12,43 @@ export class UsersService {
     private readonly usersRepo: Repository<User>,
   ) {}
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async createUser(dto: CreateUserDto): Promise<{ id: string; fullName: string; age: number; email: string}> {
     const existing = await this.usersRepo.findOne({ where: { email: dto.email } });
     if (existing) throw new ConflictException('Email already in use');
 
     const hashed = await bcrypt.hash(dto.password, 10);
 
-    const user = this.usersRepo.create({
-      fullName: dto.fullName,
-      age: dto.age,
-      email: dto.email,
-      password: hashed,
-    });
+    try {
+      const user = this.usersRepo.create({
+        fullName: dto.fullName,
+        age: dto.age,
+        email: dto.email,
+        password: hashed,
+      });
 
-    return this.usersRepo.save(user);
+      await this.usersRepo.save(user)
+
+      return {
+        id: user.id,
+        fullName: user.fullName,
+        age: user.age,
+        email: user.email
+      } ;
+
+    } catch (error) {
+      console.log(error.message);
+      return error.message; 
+    }
   }
 
   async findAll(): Promise<User[]> {
     return this.usersRepo.find();
+  }
+
+  async findByEmail(email: string): Promise<User> {
+    // return this.usersRepo.findOne({ where: { email } }); 
+    const user = await this.usersRepo.findOne({ where: { email } });
+    if (!user) throw new ConflictException('User not found');
+    return user;
   }
 }
