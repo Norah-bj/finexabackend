@@ -10,23 +10,15 @@ import { SavingsModule } from './savings/savings.module';
 import { ReportsController } from './reports/reports.controller';
 import { ReportsService } from './reports/reports.service';
 import { UsersModule } from './users/users.module';
+import { getTypeOrmConfig } from './config/ormconfig';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DB_HOST'),
-        port: Number(configService.get('DB_PORT')),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'),
-        autoLoadEntities: true,
-        synchronize: true, // false in production
-      }),
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) => getTypeOrmConfig(configService), // ✅ pass configService here
     }),
     AuthModule,
     TransactionsModule,
@@ -35,6 +27,6 @@ import { UsersModule } from './users/users.module';
     UsersModule, // ✅ import the module, do not list controllers/services again
   ],
   controllers: [AppController, ReportsController], // only controllers not provided by modules
-  providers: [AppService, ReportsService], // only providers not provided by modules
+  providers: [AppService, ReportsService],        // only providers not provided by modules
 })
 export class AppModule {}
