@@ -29,15 +29,6 @@ export class InvestmentsService {
     return this.investRepo.save(investment);
   }
 
-  async createProduct(dto: Partial<InvestmentProduct>) {
-    try {
-        const product = this.productRepo.create(dto);
-    return product;
-    } catch (error) {
-        console.log(error);
-    }
-  }
-
   findUserInvestments(userId: string) {
     return this.investRepo.find({ where: { userId } });
   }
